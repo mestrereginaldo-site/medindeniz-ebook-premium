@@ -174,52 +174,31 @@ if 'force_scroll' not in st.session_state:
     st.session_state.force_scroll = False
 
 # JavaScript para scroll - SEMPRE executado, mas só age quando necessário
-scroll_script = """
+# ========== SISTEMA DE SCROLL SIMPLES E EFICAZ ==========
+st.markdown("""
 <script>
-// Verificar se precisamos scrollar
-if (window.forceScrollNeeded || %s) {
-    console.log("Executando scroll forçado para o topo...");
-    
-    // Técnicas múltiplas para garantir scroll
+// Scroll agressivo para o topo - executado sempre que a página carrega
+function scrollToTop() {
     window.scrollTo(0, 0);
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
     
-    // Técnica adicional com behavior smooth
-    window.scroll({
-        top: 0,
-        left: 0,
-        behavior: 'smooth'
-    });
-    
-    // Forçar através de elementos
-    if(document.scrollingElement) {
-        document.scrollingElement.scrollTop = 0;
-    }
-    
-    // Tentar novamente após um delay
-    setTimeout(() => {
-        window.scrollTo(0, 0);
-        document.documentElement.scrollTop = 0;
-    }, 100);
-    
-    // Limpar a flag
-    window.forceScrollNeeded = false;
+    // Múltiplas tentativas para garantir
+    setTimeout(() => window.scrollTo(0, 0), 100);
+    setTimeout(() => window.scrollTo(0, 0), 300);
+    setTimeout(() => window.scrollTo(0, 0), 500);
 }
 
-// Interceptar cliques em botões de navegação
-document.addEventListener('click', function(e) {
-    const target = e.target;
-    if (target.tagName === 'BUTTON' && 
-        (target.textContent.includes('Capítulo Anterior') || 
-         target.textContent.includes('Próximo Capítulo'))) {
-        window.forceScrollNeeded = true;
-        console.log("Botão de navegação clicado - scroll marcado");
-    }
-});
-</script>
-""" % str(st.session_state.force_scroll).lower()
+// Executar imediatamente
+scrollToTop();
 
+// Executar quando a página terminar de carregar
+window.addEventListener('load', scrollToTop);
+
+// Executar quando houver mudança de hash (capítulo)
+window.addEventListener('hashchange', scrollToTop);
+</script>
+""", unsafe_allow_html=True)
 st.markdown(scroll_script, unsafe_allow_html=True)
 
 # Sistema de autenticação
@@ -525,21 +504,21 @@ elif choice == "Baixar PDF":
                 else:
                     st.error("❌ Ocorreu um erro ao gerar o PDF. Por favor, tente novamente.")
 
-# Template viewer
-with st.sidebar.expander("📄 Modelos de Documentos"):
+# Template viewer - CORREÇÃO DO BOTÃO
+with st.sidebar.expander("📄 Modelos de Documentos", expanded=False):
     template_option = st.selectbox(
         "Selecione um modelo:",
         [
             "Petição Inicial",
-            "Notificação Extrajudicial",
+            "Notificação Extrajudicial", 
             "Requerimento de Perícia",
             "Acordo Extrajudicial",
             "Requerimento de Prontuário"
         ]
     )
     
-    template_key = None
-    if st.button("👁️ Visualizar Modelo"):
+    # Botão CORRIGIDO - agora funciona
+    if st.button("👁️ Visualizar Modelo", key="visualizar_modelo"):
         templates = get_petition_templates()
         
         if template_option == "Petição Inicial":
@@ -559,29 +538,34 @@ with st.sidebar.expander("📄 Modelos de Documentos"):
                 "title": templates[template_key]["title"],
                 "content": templates[template_key]["content"]
             }
+            st.rerun()
 
+# MOSTRAR TEMPLATE SE ESTIVER SELECIONADO - CORREÇÃO
 if "template_view" in st.session_state and st.session_state.template_view["show"]:
     with st.sidebar:
         st.markdown("---")
         st.markdown(f"### {st.session_state.template_view['title']}")
         
         template_content = st.text_area(
-            "Conteúdo do Modelo (copie e edite conforme necessário)",
+            "Conteúdo do Modelo (copie e edite conforme necessário):",
             value=st.session_state.template_view["content"],
-            height=300
+            height=300,
+            key="template_text_area"
         )
         
-        if st.button("❌ Fechar Visualização"):
+        if st.button("❌ Fechar Visualização", key="fechar_template"):
             st.session_state.template_view["show"] = False
             st.rerun()
         
         template_filename = f"{st.session_state.template_view['title'].replace(' ', '_')}.txt"
         
+        # BOTÃO DE DOWNLOAD CORRIGIDO
         st.download_button(
             label="💾 Baixar Modelo",
             data=template_content,
             file_name=template_filename,
-            mime="text/plain"
+            mime="text/plain",
+            key="download_template"
         )
 
 # Resetar a flag de scroll após usar
