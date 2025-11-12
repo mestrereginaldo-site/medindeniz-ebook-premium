@@ -165,64 +165,10 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ========== JAVASCRIPT CORRIGIDO - SCROLL PARA O TOPO ==========
-st.markdown("""
-<script>
-// SCROLL AGGRESSIVO PARA O TOPO - EXECUTADO SEMPRE
-function forceScrollToTop() {
-    // Múltiplas técnicas para garantir scroll ao topo
-    window.scrollTo(0, 0);
-    document.documentElement.scrollTo(0, 0);
-    document.body.scrollTo(0, 0);
-    
-    // Técnicas adicionais
-    window.scroll({
-        top: 0,
-        left: 0,
-        behavior: 'instant'
-    });
-    
-    // Forçar através de elementos
-    if(document.scrollingElement) {
-        document.scrollingElement.scrollTop = 0;
-    }
-    
-    // Tentar novamente se não estiver no topo
-    if(window.pageYOffset > 0 || document.documentElement.scrollTop > 0) {
-        setTimeout(forceScrollToTop, 50);
-    }
-}
-
-// EXECUTAR IMEDIATAMENTE E REPETIDAMENTE
-forceScrollToTop();
-
-// Executar várias vezes para garantir
-setTimeout(forceScrollToTop, 100);
-setTimeout(forceScrollToTop, 300);
-setTimeout(forceScrollToTop, 500);
-setTimeout(forceScrollToTop, 1000);
-setTimeout(forceScrollToTop, 2000);
-
-// Também executar quando a página terminar de carregar
-window.addEventListener('load', forceScrollToTop);
-window.addEventListener('DOMContentLoaded', forceScrollToTop);
-
-// Executar a cada mudança de hash (capítulo)
-window.addEventListener('hashchange', forceScrollToTop);
-
-// Interceptar cliques em links para forçar scroll
-document.addEventListener('click', function(e) {
-    if(e.target.tagName === 'BUTTON' || e.target.closest('button')) {
-        setTimeout(forceScrollToTop, 10);
-    }
-});
-</script>
-""", unsafe_allow_html=True)
-
 # Adicionar uma âncora no topo da página
 st.markdown('<div id="top"></div>', unsafe_allow_html=True)
 
-# Sistema de autenticação (mantido igual)
+# Sistema de autenticação
 if 'autenticado' not in st.session_state:
     st.session_state.autenticado = False
 
@@ -254,7 +200,7 @@ if not st.session_state.autenticado:
     """, unsafe_allow_html=True)
     st.stop()
 
-# Sidebar Navigation (mantido igual)
+# Sidebar Navigation
 st.sidebar.title("Navegação")
 pages = ["Capa", "Visualizar E-book", "Baixar PDF"]
 
@@ -263,7 +209,7 @@ if 'choice' not in st.session_state:
 
 choice = st.sidebar.radio("Ir para:", pages, index=pages.index(st.session_state.choice))
 
-# MedIndeniz Company information in sidebar (mantido igual)
+# MedIndeniz Company information in sidebar
 st.sidebar.markdown("<hr style='margin-top: 20px; margin-bottom: 20px;'>", unsafe_allow_html=True)
 st.sidebar.markdown("<h3 style='text-align: center;'>Sobre</h3>", unsafe_allow_html=True)
 
@@ -299,8 +245,7 @@ O conteúdo tem caráter informativo e não substitui a consulta a um advogado e
 </div>
 """, unsafe_allow_html=True)
 
-# ========== NAVEGAÇÃO CORRIGIDA - SCROLL SEMPRE AO TOPO ==========
-
+# Main content
 if choice == "Capa":
     col1, col2, col3 = st.columns([1, 3, 1])
     
@@ -333,12 +278,15 @@ if choice == "Capa":
                 st.rerun()
 
 elif choice == "Visualizar E-book":
-    # SEMPRE SCROLLAR PARA O TOPO AO ENTRAR NESTA PÁGINA
+    # JavaScript para scrollar para o topo sempre que esta página for carregada
     st.markdown("""
     <script>
-        window.scrollTo(0, 0);
-        document.documentElement.scrollTop = 0;
-        document.body.scrollTop = 0;
+        // Scroll para o topo com um delay de 100ms para garantir que a página foi carregada
+        setTimeout(() => {
+            window.scrollTo(0, 0);
+            document.documentElement.scrollTop = 0;
+            document.body.scrollTop = 0;
+        }, 100);
     </script>
     """, unsafe_allow_html=True)
     
@@ -359,15 +307,6 @@ elif choice == "Visualizar E-book":
     # Atualizar seleção
     if st.session_state.selected_chapter != selected_chapter:
         st.session_state.selected_chapter = selected_chapter
-        # SCROLL AUTOMÁTICO AO MUDAR CAPÍTULO
-        st.markdown("""
-        <script>
-            setTimeout(() => {
-                window.scrollTo(0, 0);
-                document.documentElement.scrollTop = 0;
-            }, 100);
-        </script>
-        """, unsafe_allow_html=True)
     
     # Exibir imagem do capítulo
     images = get_image_urls()
@@ -393,7 +332,7 @@ elif choice == "Visualizar E-book":
     
     st.markdown(f"<h2 class='chapter-title'>{chapter['title']}</h2>", unsafe_allow_html=True)
     
-    # Botões de navegação - CORRIGIDOS PARA SCROLL AO TOPO
+    # Botões de navegação
     col1, col2 = st.columns(2)
     with col1:
         if chapter_index > 0:
@@ -466,7 +405,7 @@ elif choice == "Visualizar E-book":
         
         st.markdown("</div>", unsafe_allow_html=True)
     
-    # Botões de navegação no final - TAMBÉM CORRIGIDOS
+    # Botões de navegação no final
     st.markdown("<br><br>", unsafe_allow_html=True)
     
     col1, col2 = st.columns(2)
@@ -533,7 +472,7 @@ elif choice == "Baixar PDF":
                 else:
                     st.error("❌ Ocorreu um erro ao gerar o PDF. Por favor, tente novamente.")
 
-# Template viewer (mantido igual)
+# Template viewer
 with st.sidebar.expander("📄 Modelos de Documentos"):
     template_option = st.selectbox(
         "Selecione um modelo:",
