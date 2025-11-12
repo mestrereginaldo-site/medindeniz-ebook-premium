@@ -24,3 +24,8 @@ test*
 demo*
 examples/
 docs/
+Procfile
+install.sh
+pyproject.toml
+uv.lock
+generated-icon.png
