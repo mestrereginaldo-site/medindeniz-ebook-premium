@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ chapter.title }}</title>
+    <style>
+        body { font-family: Arial; margin: 20px; background: #f0f2f6; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; }
+        h1 { color: #1E64C8; }
+        .navigation { display: flex; justify-content: space-between; margin: 20px 0; }
+        .nav-btn { padding: 10px 20px; background: #1E64C8; color: white; text-decoration: none; border-radius: 5px; }
+        .content { line-height: 1.6; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="navigation">
+            {% if chapter_id > 0 %}
+            <a href="/chapter/{{ chapter_id - 1 }}" class="nav-btn">← Anterior</a>
+            {% else %}
+            <span></span>
+            {% endif %}
+            
+            <a href="/home">🏠 Início</a>
+            
+            {% if chapter_id < total_chapters - 1 %}
+            <a href="/chapter/{{ chapter_id + 1 }}" class="nav-btn">Próximo →</a>
+            {% else %}
+            <span></span>
+            {% endif %}
+        </div>
+        
+        <h1>{{ chapter.title }}</h1>
+        <div class="content">
+            {{ chapter.content }}
+        </div>
+        
+        <div class="navigation">
+            {% if chapter_id > 0 %}
+            <a href="/chapter/{{ chapter_id - 1 }}" class="nav-btn">← Capítulo Anterior</a>
+            {% else %}
+            <span></span>
+            {% endif %}
+            
+            <a href="/home">🏠 Voltar ao Início</a>
+            
+            {% if chapter_id < total_chapters - 1 %}
+            <a href="/chapter/{{ chapter_id + 1 }}" class="nav-btn">Próximo Capítulo →</a>
+            {% else %}
+            <span></span>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
