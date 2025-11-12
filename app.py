@@ -4,7 +4,7 @@ from io import BytesIO
 import os
 
 app = Flask(__name__)
-app.secret_key = 'medindeniz_secret_key_2025'
+app.secret_key = os.environ.get('SECRET_KEY', 'medindeniz_secret_key_2025')
 
 # Dados do e-book diretamente no código (sem imports externos)
 ebook_content = {
