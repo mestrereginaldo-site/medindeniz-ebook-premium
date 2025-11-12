@@ -2,7 +2,7 @@ import streamlit as st
 import base64
 from io import BytesIO
 from utils.pdf_generator import generate_pdf
-from content.chapters_new import ebook_content
+from content.chapters import ebook_content
 from content.templates import get_petition_templates
 from assets.images import get_image_urls, get_cover_image, get_author_image
 from content.sample_images import get_placeholder_image_dict
