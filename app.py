@@ -16,7 +16,7 @@ st.set_page_config(
     initial_sidebar_state="auto"
 )
 
-# ========== CSS SUPER FORÇADO PARA TEMA CLARO ==========
+# ========== CSS CORRIGIDO - BOTÕES E TEMA CLARO ==========
 st.markdown("""
 <style>
     /* RESET COMPLETO - FORÇAR TEMA CLARO */
@@ -25,7 +25,7 @@ st.markdown("""
         color: black !important;
     }
     
-    /* CORRIGIR TODOS OS TEXTOS */
+    /* CORRIGIR TODOS OS TEXTOS - MAS EXCETO BOTÕES */
     body, h1, h2, h3, h4, h5, h6, p, div, span, li, td, th, label {
         color: #000000 !important;
     }
@@ -74,12 +74,23 @@ st.markdown("""
         border: 1px solid #ced4da !important;
     }
     
-    /* CORRIGIR BOTÕES */
-    .stButton button {
+    /* CORRIGIR BOTÕES - TEXTO BRANCO SEMPRE! */
+    .stButton button, .stButton button p, .stButton button span,
+    .stDownloadButton button, .stDownloadButton button p, .stDownloadButton button span {
         background-color: #1E64C8 !important;
         color: white !important;
         border: none !important;
         border-radius: 4px !important;
+    }
+    
+    .stButton button:hover, .stDownloadButton button:hover {
+        background-color: #1552a3 !important;
+        color: white !important;
+    }
+    
+    /* GARANTIR QUE O TEXTO DOS BOTÕES SEJA BRANCO */
+    .stButton button *, .stDownloadButton button * {
+        color: white !important !important;
     }
     
     /* CORRIGIR SELECT BOX */
@@ -154,60 +165,64 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Resto do código original mantido igual...
+# ========== JAVASCRIPT CORRIGIDO - SCROLL PARA O TOPO ==========
 st.markdown("""
-<script type="text/javascript">
-    function forceScrollToTop() {
-        window.scrollTo(0, 0);
-        document.documentElement.scrollTo(0, 0);
-        document.body.scrollTo(0, 0);
-        
-        if (window.scrollY > 0) {
-            setTimeout(forceScrollToTop, 100);
-        }
+<script>
+// SCROLL AGGRESSIVO PARA O TOPO - EXECUTADO SEMPRE
+function forceScrollToTop() {
+    // Múltiplas técnicas para garantir scroll ao topo
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTo(0, 0);
+    document.body.scrollTo(0, 0);
+    
+    // Técnicas adicionais
+    window.scroll({
+        top: 0,
+        left: 0,
+        behavior: 'instant'
+    });
+    
+    // Forçar através de elementos
+    if(document.scrollingElement) {
+        document.scrollingElement.scrollTop = 0;
     }
     
-    forceScrollToTop();
-    setTimeout(forceScrollToTop, 10);  
-    setTimeout(forceScrollToTop, 100);
-    setTimeout(forceScrollToTop, 200);
-    setTimeout(forceScrollToTop, 500);
-    setTimeout(forceScrollToTop, 1000);
-    
-    document.addEventListener('DOMContentLoaded', function() {
-        var topButton = document.createElement('button');
-        topButton.id = 'auto-top-button';
-        topButton.style.position = 'fixed';
-        topButton.style.top = '0';
-        topButton.style.opacity = '0';
-        topButton.style.pointerEvents = 'none';
-        document.body.prepend(topButton);
-        
-        setTimeout(function() {
-            document.getElementById('auto-top-button').click();
-            forceScrollToTop();
-        }, 100);
-    });
+    // Tentar novamente se não estiver no topo
+    if(window.pageYOffset > 0 || document.documentElement.scrollTop > 0) {
+        setTimeout(forceScrollToTop, 50);
+    }
+}
+
+// EXECUTAR IMEDIATAMENTE E REPETIDAMENTE
+forceScrollToTop();
+
+// Executar várias vezes para garantir
+setTimeout(forceScrollToTop, 100);
+setTimeout(forceScrollToTop, 300);
+setTimeout(forceScrollToTop, 500);
+setTimeout(forceScrollToTop, 1000);
+setTimeout(forceScrollToTop, 2000);
+
+// Também executar quando a página terminar de carregar
+window.addEventListener('load', forceScrollToTop);
+window.addEventListener('DOMContentLoaded', forceScrollToTop);
+
+// Executar a cada mudança de hash (capítulo)
+window.addEventListener('hashchange', forceScrollToTop);
+
+// Interceptar cliques em links para forçar scroll
+document.addEventListener('click', function(e) {
+    if(e.target.tagName === 'BUTTON' || e.target.closest('button')) {
+        setTimeout(forceScrollToTop, 10);
+    }
+});
 </script>
 """, unsafe_allow_html=True)
 
 # Adicionar uma âncora no topo da página
-st.markdown("""
-<div id="topo"></div>
-<button id="topoBtn" onclick="window.scrollTo(0,0)" 
-    style="position: fixed; z-index: 9999; top: 0; left: 0; width: 1px; height: 1px; 
-    opacity: 0.01; background: transparent; border: none;"></button>
-""", unsafe_allow_html=True)
+st.markdown('<div id="top"></div>', unsafe_allow_html=True)
 
-# Adicionar um número ao estado da sessão para forçar a reinicialização completa
-if "page_load_count" not in st.session_state:
-    st.session_state.page_load_count = 0
-    
-# Variável para controlar se precisamos rolar para o topo
-if "scroll_to_top" not in st.session_state:
-    st.session_state.scroll_to_top = False
-
-# Sistema simples de senha para controle de acesso
+# Sistema de autenticação (mantido igual)
 if 'autenticado' not in st.session_state:
     st.session_state.autenticado = False
 
@@ -215,7 +230,6 @@ if not st.session_state.autenticado:
     st.markdown("<h1 class='main-header'>MedIndeniz</h1>", unsafe_allow_html=True)
     st.markdown("<h2 class='sub-header'>Guia Completo: Indenização por Erro Médico</h2>", unsafe_allow_html=True)
     
-    # Forçar centralização com HTML direto e margens auto
     balanca_url = get_medindeniz_logo_svg()
     st.markdown(f"""
     <div style="text-align: center; width: 100%;">
@@ -224,7 +238,7 @@ if not st.session_state.autenticado:
     """, unsafe_allow_html=True)
     
     senha = st.text_input("Digite a senha de acesso fornecida na compra:", type="password")
-    senha_correta = "medindeniz2025"  # Altere para a senha desejada
+    senha_correta = "medindeniz2025"
     
     if st.button("Acessar E-book"):
         if senha == senha_correta:
@@ -238,30 +252,24 @@ if not st.session_state.autenticado:
     Se você ainda não adquiriu o e-book, visite <a href='https://medindeniz.com.br' target='_blank'>nosso site</a>.
     </div>
     """, unsafe_allow_html=True)
-    
-    # Para a execução do app aqui até que a senha correta seja fornecida
     st.stop()
 
-# Sidebar Navigation
+# Sidebar Navigation (mantido igual)
 st.sidebar.title("Navegação")
 pages = ["Capa", "Visualizar E-book", "Baixar PDF"]
 
-# Inicializa a escolha na sessão se necessário
 if 'choice' not in st.session_state:
     st.session_state.choice = "Capa"
 
-# Usa a variável da sessão para o estado do radio
 choice = st.sidebar.radio("Ir para:", pages, index=pages.index(st.session_state.choice))
 
-# MedIndeniz Company information in sidebar
+# MedIndeniz Company information in sidebar (mantido igual)
 st.sidebar.markdown("<hr style='margin-top: 20px; margin-bottom: 20px;'>", unsafe_allow_html=True)
 st.sidebar.markdown("<h3 style='text-align: center;'>Sobre</h3>", unsafe_allow_html=True)
 
-# Exibir a imagem da MedIndeniz
 medindeniz_info = get_medindeniz_about()
 medindeniz_logo_url = get_medindeniz_logo_svg()
 
-# Mostrar imagem com texto grande 
 st.sidebar.image(medindeniz_logo_url, width=250)
 st.sidebar.markdown(f"""
 <h2 style="font-weight: bold; color: #1E64C8; text-align: center; font-size: 26px;">{medindeniz_info['name']}</h2>
@@ -291,12 +299,12 @@ O conteúdo tem caráter informativo e não substitui a consulta a um advogado e
 </div>
 """, unsafe_allow_html=True)
 
-# Main content
+# ========== NAVEGAÇÃO CORRIGIDA - SCROLL SEMPRE AO TOPO ==========
+
 if choice == "Capa":
     col1, col2, col3 = st.columns([1, 3, 1])
     
     with col2:
-        # Usar URL da imagem de capa
         st.image(get_cover_image(), use_container_width=True)
         st.markdown("<h1 class='main-header'>Guia Completo: Indenização por Erro Médico</h1>", unsafe_allow_html=True)
         st.markdown("<h2 class='sub-header'>Guia completo para profissionais e vítimas</h2>", unsafe_allow_html=True)
@@ -316,114 +324,94 @@ if choice == "Capa":
         
         col_a, col_b = st.columns(2)
         with col_a:
-            if st.button("Visualizar Conteúdo", use_container_width=True):
+            if st.button("📖 Visualizar Conteúdo", use_container_width=True):
                 st.session_state.choice = "Visualizar E-book"
-                st.query_params["page"] = "visualizar"
                 st.rerun()
         with col_b:
-            if st.button("Baixar PDF", use_container_width=True):
+            if st.button("📥 Baixar PDF", use_container_width=True):
                 st.session_state.choice = "Baixar PDF"
-                st.query_params["page"] = "baixar"
                 st.rerun()
 
 elif choice == "Visualizar E-book":
+    # SEMPRE SCROLLAR PARA O TOPO AO ENTRAR NESTA PÁGINA
+    st.markdown("""
+    <script>
+        window.scrollTo(0, 0);
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+    </script>
+    """, unsafe_allow_html=True)
+    
     st.markdown("<h1 class='main-header'>Guia Completo: Indenização por Erro Médico</h1>", unsafe_allow_html=True)
     st.markdown("<h2 class='sub-header'>Guia completo para profissionais e vítimas</h2>", unsafe_allow_html=True)
     
-    # Verificar se há parâmetro de capítulo na URL
-    if "chapter" in st.query_params:
-        try:
-            url_chapter_index = int(st.query_params["chapter"])
-            if 0 <= url_chapter_index < len(ebook_content["chapters"]):
-                st.session_state.selected_chapter = ebook_content["chapters"][url_chapter_index]["title"]
-                if st.session_state.scroll_to_top:
-                    st.session_state.scroll_to_top = False
-                    st.markdown("""
-                    <script>
-                        window.scrollTo(0, 0);
-                    </script>
-                    """, unsafe_allow_html=True)
-        except:
-            pass
-    
-    # Inicializar a seleção de capítulo se não existir na sessão
+    # Inicializar a seleção de capítulo
     if 'selected_chapter' not in st.session_state:
         st.session_state.selected_chapter = ebook_content["chapters"][0]["title"]
     
-    # Seleção de capítulo em uma lista suspensa
     chapter_titles = [chapter["title"] for chapter in ebook_content["chapters"]]
-    selected_chapter = st.selectbox("Selecione o capítulo:", chapter_titles, index=chapter_titles.index(st.session_state.selected_chapter))
+    selected_chapter = st.selectbox("Selecione o capítulo:", chapter_titles, 
+                                  index=chapter_titles.index(st.session_state.selected_chapter))
     
-    # Encontrar o índice do capítulo selecionado
     chapter_index = chapter_titles.index(selected_chapter)
     chapter = ebook_content["chapters"][chapter_index]
     
-    # Atualizar a seleção de capítulo na sessão e o parâmetro na URL
+    # Atualizar seleção
     if st.session_state.selected_chapter != selected_chapter:
         st.session_state.selected_chapter = selected_chapter
-        st.query_params["chapter"] = str(chapter_index)
+        # SCROLL AUTOMÁTICO AO MUDAR CAPÍTULO
+        st.markdown("""
+        <script>
+            setTimeout(() => {
+                window.scrollTo(0, 0);
+                document.documentElement.scrollTop = 0;
+            }, 100);
+        </script>
+        """, unsafe_allow_html=True)
     
-    # Exibir imagem para o capítulo usando URLs
+    # Exibir imagem do capítulo
     images = get_image_urls()
-    
-    # Determinar qual imagem usar com base no índice do capítulo, com tamanho reduzido
     col1, col2, col3 = st.columns([1, 2, 1])
     
     with col2:
-        if chapter_index == 0:  # Introdução
+        if chapter_index == 0:
             caption = "Documentos jurídicos relacionados a processos de erro médico"
             image_url = images["legal_documents"][0]
             st.image(image_url, use_container_width=True, caption=caption)
-        elif chapter_index in [1, 2, 3]:  # Capítulos sobre erro médico
+        elif chapter_index in [1, 2, 3]:
             caption = "Aspectos da relação médico-paciente e erros médicos"
             image_url = images["medical_error"][chapter_index % len(images["medical_error"])]
             st.image(image_url, use_container_width=True, caption=caption)
-        elif chapter_index in [4, 5]:  # Capítulos sobre processos
+        elif chapter_index in [4, 5]:
             caption = "Relação entre médicos e pacientes no contexto jurídico"
             image_url = images["doctor_patient"][(chapter_index - 4) % len(images["doctor_patient"])]
             st.image(image_url, use_container_width=True, caption=caption)
-        else:  # Outros capítulos
+        else:
             caption = "Escritório de advocacia especializado em erro médico"
             image_url = images["law_office"][(chapter_index - 6) % len(images["law_office"])]
             st.image(image_url, use_container_width=True, caption=caption)
     
-    # Mostrar título do capítulo como cabeçalho
     st.markdown(f"<h2 class='chapter-title'>{chapter['title']}</h2>", unsafe_allow_html=True)
     
-    # Exibir navegação de capítulos (anterior/próximo)
+    # Botões de navegação - CORRIGIDOS PARA SCROLL AO TOPO
     col1, col2 = st.columns(2)
     with col1:
         if chapter_index > 0:
-            if st.button("← Capítulo Anterior", use_container_width=True, key="btn_anterior", 
-                        help="Navegar para o capítulo anterior"):
+            if st.button("⬅️ Capítulo Anterior", use_container_width=True, key="btn_anterior"):
                 new_index = chapter_index - 1
                 st.session_state.selected_chapter = chapter_titles[new_index]
-                st.session_state.page_load_count += 1
-                st.session_state.scroll_to_top = True
-                st.query_params.clear()
-                st.query_params["page"] = "visualizar"
-                st.query_params["chapter"] = str(new_index)
                 st.rerun()
     with col2:
         if chapter_index < len(chapter_titles) - 1:
-            if st.button("Próximo Capítulo →", use_container_width=True, key="btn_proximo",
-                        help="Navegar para o próximo capítulo"):
+            if st.button("Próximo Capítulo ➡️", use_container_width=True, key="btn_proximo"):
                 new_index = chapter_index + 1
                 st.session_state.selected_chapter = chapter_titles[new_index]
-                st.session_state.page_load_count += 1
-                st.session_state.scroll_to_top = True
-                st.query_params.clear()
-                st.query_params["page"] = "visualizar"
-                st.query_params["chapter"] = str(new_index)
                 st.rerun()
     
-    # Botões de navegação no final do capítulo também
-    st.markdown("<br><br>", unsafe_allow_html=True)
-    
-    # Separador visual antes do conteúdo
+    st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("<hr/>", unsafe_allow_html=True)
     
-    # Exibir conteúdo do capítulo selecionado em formato card
+    # Conteúdo do capítulo
     with st.container():
         st.markdown("<div class='card-container'>", unsafe_allow_html=True)
         
@@ -438,7 +426,6 @@ elif choice == "Visualizar E-book":
                 elif element["type"] == "table" and "data" in element:
                     if "title" in element:
                         st.markdown(f"<h4>{element['title']}</h4>", unsafe_allow_html=True)
-                    
                     headers = element["data"][0]
                     data = element["data"][1:]
                     st.table([dict(zip(headers, row)) for row in data])
@@ -479,36 +466,23 @@ elif choice == "Visualizar E-book":
         
         st.markdown("</div>", unsafe_allow_html=True)
     
-    # Botões de navegação no final do capítulo
+    # Botões de navegação no final - TAMBÉM CORRIGIDOS
     st.markdown("<br><br>", unsafe_allow_html=True)
     
     col1, col2 = st.columns(2)
     with col1:
         if chapter_index > 0:
-            if st.button("← Capítulo Anterior", use_container_width=True, key="btn_anterior_bottom", 
-                        help="Navegar para o capítulo anterior"):
+            if st.button("⬅️ Capítulo Anterior", use_container_width=True, key="btn_anterior_bottom"):
                 new_index = chapter_index - 1
                 st.session_state.selected_chapter = chapter_titles[new_index]
-                st.session_state.page_load_count += 1
-                st.session_state.scroll_to_top = True
-                st.query_params.clear()
-                st.query_params["page"] = "visualizar"
-                st.query_params["chapter"] = str(new_index)
                 st.rerun()
     with col2:
         if chapter_index < len(chapter_titles) - 1:
-            if st.button("Próximo Capítulo →", use_container_width=True, key="btn_proximo_bottom",
-                        help="Navegar para o próximo capítulo"):
+            if st.button("Próximo Capítulo ➡️", use_container_width=True, key="btn_proximo_bottom"):
                 new_index = chapter_index + 1
                 st.session_state.selected_chapter = chapter_titles[new_index]
-                st.session_state.page_load_count += 1
-                st.session_state.scroll_to_top = True
-                st.query_params.clear()
-                st.query_params["page"] = "visualizar"
-                st.query_params["chapter"] = str(new_index)
                 st.rerun()
                 
-    # Footer
     st.markdown("<div class='footer'>", unsafe_allow_html=True)
     st.markdown("""
     © 2025 - Todos os direitos reservados  
@@ -537,7 +511,7 @@ elif choice == "Baixar PDF":
         """)
         st.markdown("</div>", unsafe_allow_html=True)
         
-        if st.button("Gerar PDF para Download", use_container_width=True):
+        if st.button("🔄 Gerar PDF para Download", use_container_width=True):
             with st.spinner("Gerando PDF, por favor aguarde..."):
                 pdf_data = generate_pdf(
                     title=ebook_content["title"],
@@ -547,21 +521,20 @@ elif choice == "Baixar PDF":
                 
                 if pdf_data:
                     file_name = "Ebook_Indenizacao_Erro_Medico_Dr_Reginaldo_Oliveira.pdf"
-                    
-                    st.success("PDF gerado com sucesso!")
+                    st.success("✅ PDF gerado com sucesso!")
                     st.markdown(
                         f'<a href="data:application/pdf;base64,{pdf_data}" download="{file_name}" target="_blank">'
                         f'<button style="background-color: #1E64C8; color: white; padding: 12px 20px; '
                         f'border: none; border-radius: 4px; cursor: pointer; font-size: 16px; '
                         f'width: 100%; margin-top: 12px;">'
-                        f'Baixar PDF</button></a>',
+                        f'📥 Baixar PDF</button></a>',
                         unsafe_allow_html=True
                     )
                 else:
-                    st.error("Ocorreu um erro ao gerar o PDF. Por favor, tente novamente.")
+                    st.error("❌ Ocorreu um erro ao gerar o PDF. Por favor, tente novamente.")
 
-# Additional features - Template viewer (optional tab)
-with st.sidebar.expander("Modelos de Documentos"):
+# Template viewer (mantido igual)
+with st.sidebar.expander("📄 Modelos de Documentos"):
     template_option = st.selectbox(
         "Selecione um modelo:",
         [
@@ -574,7 +547,7 @@ with st.sidebar.expander("Modelos de Documentos"):
     )
     
     template_key = None
-    if st.button("Visualizar Modelo"):
+    if st.button("👁️ Visualizar Modelo"):
         templates = get_petition_templates()
         
         if template_option == "Petição Inicial":
@@ -595,7 +568,6 @@ with st.sidebar.expander("Modelos de Documentos"):
                 "content": templates[template_key]["content"]
             }
 
-# Show template viewer if selected
 if "template_view" in st.session_state and st.session_state.template_view["show"]:
     with st.sidebar:
         st.markdown("---")
@@ -607,14 +579,14 @@ if "template_view" in st.session_state and st.session_state.template_view["show"
             height=300
         )
         
-        if st.button("Fechar Visualização"):
+        if st.button("❌ Fechar Visualização"):
             st.session_state.template_view["show"] = False
             st.rerun()
         
         template_filename = f"{st.session_state.template_view['title'].replace(' ', '_')}.txt"
         
         st.download_button(
-            label="Baixar Modelo",
+            label="💾 Baixar Modelo",
             data=template_content,
             file_name=template_filename,
             mime="text/plain"
