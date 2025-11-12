@@ -165,8 +165,62 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# ========== SISTEMA DE SCROLL CORRIGIDO ==========
 # Adicionar uma âncora no topo da página
 st.markdown('<div id="top"></div>', unsafe_allow_html=True)
+
+# Sistema para controlar o scroll
+if 'force_scroll' not in st.session_state:
+    st.session_state.force_scroll = False
+
+# JavaScript para scroll - SEMPRE executado, mas só age quando necessário
+scroll_script = """
+<script>
+// Verificar se precisamos scrollar
+if (window.forceScrollNeeded || %s) {
+    console.log("Executando scroll forçado para o topo...");
+    
+    // Técnicas múltiplas para garantir scroll
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    
+    // Técnica adicional com behavior smooth
+    window.scroll({
+        top: 0,
+        left: 0,
+        behavior: 'smooth'
+    });
+    
+    // Forçar através de elementos
+    if(document.scrollingElement) {
+        document.scrollingElement.scrollTop = 0;
+    }
+    
+    // Tentar novamente após um delay
+    setTimeout(() => {
+        window.scrollTo(0, 0);
+        document.documentElement.scrollTop = 0;
+    }, 100);
+    
+    // Limpar a flag
+    window.forceScrollNeeded = false;
+}
+
+// Interceptar cliques em botões de navegação
+document.addEventListener('click', function(e) {
+    const target = e.target;
+    if (target.tagName === 'BUTTON' && 
+        (target.textContent.includes('Capítulo Anterior') || 
+         target.textContent.includes('Próximo Capítulo'))) {
+        window.forceScrollNeeded = true;
+        console.log("Botão de navegação clicado - scroll marcado");
+    }
+});
+</script>
+""" % str(st.session_state.force_scroll).lower()
+
+st.markdown(scroll_script, unsafe_allow_html=True)
 
 # Sistema de autenticação
 if 'autenticado' not in st.session_state:
@@ -189,6 +243,7 @@ if not st.session_state.autenticado:
     if st.button("Acessar E-book"):
         if senha == senha_correta:
             st.session_state.autenticado = True
+            st.session_state.force_scroll = True
             st.rerun()
         else:
             st.error("Senha incorreta. Por favor, digite a senha fornecida na compra do e-book.")
@@ -245,7 +300,8 @@ O conteúdo tem caráter informativo e não substitui a consulta a um advogado e
 </div>
 """, unsafe_allow_html=True)
 
-# Main content
+# ========== NAVEGAÇÃO PRINCIPAL ==========
+
 if choice == "Capa":
     col1, col2, col3 = st.columns([1, 3, 1])
     
@@ -271,6 +327,7 @@ if choice == "Capa":
         with col_a:
             if st.button("📖 Visualizar Conteúdo", use_container_width=True):
                 st.session_state.choice = "Visualizar E-book"
+                st.session_state.force_scroll = True
                 st.rerun()
         with col_b:
             if st.button("📥 Baixar PDF", use_container_width=True):
@@ -278,17 +335,8 @@ if choice == "Capa":
                 st.rerun()
 
 elif choice == "Visualizar E-book":
-    # JavaScript para scrollar para o topo sempre que esta página for carregada
-    st.markdown("""
-    <script>
-        // Scroll para o topo com um delay de 100ms para garantir que a página foi carregada
-        setTimeout(() => {
-            window.scrollTo(0, 0);
-            document.documentElement.scrollTop = 0;
-            document.body.scrollTop = 0;
-        }, 100);
-    </script>
-    """, unsafe_allow_html=True)
+    # SEMPRE garantir que estamos no topo ao entrar nesta página
+    st.session_state.force_scroll = True
     
     st.markdown("<h1 class='main-header'>Guia Completo: Indenização por Erro Médico</h1>", unsafe_allow_html=True)
     st.markdown("<h2 class='sub-header'>Guia completo para profissionais e vítimas</h2>", unsafe_allow_html=True)
@@ -304,9 +352,10 @@ elif choice == "Visualizar E-book":
     chapter_index = chapter_titles.index(selected_chapter)
     chapter = ebook_content["chapters"][chapter_index]
     
-    # Atualizar seleção
+    # Atualizar seleção E FORÇAR SCROLL
     if st.session_state.selected_chapter != selected_chapter:
         st.session_state.selected_chapter = selected_chapter
+        st.session_state.force_scroll = True
     
     # Exibir imagem do capítulo
     images = get_image_urls()
@@ -332,19 +381,21 @@ elif choice == "Visualizar E-book":
     
     st.markdown(f"<h2 class='chapter-title'>{chapter['title']}</h2>", unsafe_allow_html=True)
     
-    # Botões de navegação
+    # Botões de navegação - CORRIGIDOS PARA SCROLL
     col1, col2 = st.columns(2)
     with col1:
         if chapter_index > 0:
             if st.button("⬅️ Capítulo Anterior", use_container_width=True, key="btn_anterior"):
                 new_index = chapter_index - 1
                 st.session_state.selected_chapter = chapter_titles[new_index]
+                st.session_state.force_scroll = True
                 st.rerun()
     with col2:
         if chapter_index < len(chapter_titles) - 1:
             if st.button("Próximo Capítulo ➡️", use_container_width=True, key="btn_proximo"):
                 new_index = chapter_index + 1
                 st.session_state.selected_chapter = chapter_titles[new_index]
+                st.session_state.force_scroll = True
                 st.rerun()
     
     st.markdown("<br>", unsafe_allow_html=True)
@@ -405,7 +456,7 @@ elif choice == "Visualizar E-book":
         
         st.markdown("</div>", unsafe_allow_html=True)
     
-    # Botões de navegação no final
+    # Botões de navegação no final - TAMBÉM CORRIGIDOS
     st.markdown("<br><br>", unsafe_allow_html=True)
     
     col1, col2 = st.columns(2)
@@ -414,12 +465,14 @@ elif choice == "Visualizar E-book":
             if st.button("⬅️ Capítulo Anterior", use_container_width=True, key="btn_anterior_bottom"):
                 new_index = chapter_index - 1
                 st.session_state.selected_chapter = chapter_titles[new_index]
+                st.session_state.force_scroll = True
                 st.rerun()
     with col2:
         if chapter_index < len(chapter_titles) - 1:
             if st.button("Próximo Capítulo ➡️", use_container_width=True, key="btn_proximo_bottom"):
                 new_index = chapter_index + 1
                 st.session_state.selected_chapter = chapter_titles[new_index]
+                st.session_state.force_scroll = True
                 st.rerun()
                 
     st.markdown("<div class='footer'>", unsafe_allow_html=True)
@@ -530,3 +583,7 @@ if "template_view" in st.session_state and st.session_state.template_view["show"
             file_name=template_filename,
             mime="text/plain"
         )
+
+# Resetar a flag de scroll após usar
+if st.session_state.force_scroll:
+    st.session_state.force_scroll = False
