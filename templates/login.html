@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MedIndeniz - Login</title>
+    <style>
+        body { font-family: Arial; margin: 50px; background: #f0f2f6; }
+        .container { max-width: 400px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; }
+        h1 { color: #1E64C8; text-align: center; }
+        input, button { width: 100%; padding: 12px; margin: 10px 0; }
+        button { background: #1E64C8; color: white; border: none; border-radius: 5px; }
+        .error { color: red; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 MedIndeniz</h1>
+        <p style="text-align: center;">E-book Premium: Indenização por Erro Médico</p>
+        
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+        
+        <form method="POST">
+            <input type="password" name="password" placeholder="Senha" required>
+            <button type="submit">Acessar</button>
+        </form>
+        
+        <p style="text-align: center; color: #666; font-size: 12px;">
+            Senha: medindeniz2025
+        </p>
+    </div>
+</body>
+</html>
