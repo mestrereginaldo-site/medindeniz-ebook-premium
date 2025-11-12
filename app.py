@@ -8,15 +8,79 @@ from assets.images import get_image_urls, get_cover_image, get_author_image
 from content.sample_images import get_placeholder_image_dict
 from assets.logo import get_medindeniz_logo_svg, get_medindeniz_about
 
-# Page configuration
+# ========== CONFIGURAÇÃO PARA TEMA CLARO ==========
 st.set_page_config(
     page_title="E-book Premium: Indenização por Erro Médico",
     page_icon="⚖️",
-    layout="centered",  # Mudando para centered para melhor visualização em dispositivos móveis
-    initial_sidebar_state="auto"  # 'auto' faz a barra lateral se adaptar melhor a dispositivos móveis
+    layout="centered",
+    initial_sidebar_state="auto"
 )
 
-# Custom CSS for styling
+# ========== CSS FORÇADO PARA TEMA CLARO ==========
+st.markdown("""
+<style>
+    /* FORÇAR TEMA CLARO - FUNDO BRANCO */
+    .stApp {
+        background-color: white !important;
+    }
+    
+    /* CORRIGIR CORES DO TEXTO */
+    .main-header, .sub-header, .chapter-title, .section-title, 
+    .normal-text, .quote-text, .footer, h1, h2, h3, h4, h5, h6, p, div, span {
+        color: #000000 !important;
+    }
+    
+    /* CORRIGIR BARRA LATERAL */
+    .css-1d391kg, .sidebar .sidebar-content {
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    /* CORRIGIR CORES DOS CARDS */
+    .card-container {
+        background-color: #F8F9FA !important;
+        color: black !important;
+        border: 1px solid #ddd !important;
+    }
+    
+    .blue-container {
+        background-color: #E3F2FD !important;
+        color: black !important;
+        border-left: 5px solid #1E64C8 !important;
+    }
+    
+    .yellow-container {
+        background-color: #FFFDE7 !important;
+        color: black !important;
+        border-left: 5px solid #FFB200 !important;
+    }
+    
+    /* CORRIGIR INPUTS E BOTÕES */
+    .stTextInput input, .stPassword input {
+        background-color: white !important;
+        color: black !important;
+        border: 1px solid #ccc !important;
+    }
+    
+    .stButton button {
+        background-color: #1E64C8 !important;
+        color: white !important;
+    }
+    
+    /* CORRIGIR SELECT BOX */
+    .stSelectbox div[data-baseweb="select"] {
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    /* GARANTIR QUE TODOS OS TEXTOS SEJAM PRETOS */
+    * {
+        color: #000000 !important;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# Resto do código original mantido igual...
 st.markdown("""
 <style>
     .main-header {
