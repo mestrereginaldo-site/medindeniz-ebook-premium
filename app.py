@@ -8,7 +8,7 @@ from assets.images import get_image_urls, get_cover_image, get_author_image
 from content.sample_images import get_placeholder_image_dict
 from assets.logo import get_medindeniz_logo_svg, get_medindeniz_about
 
-# ========== CONFIGURAÇÃO PARA TEMA CLARO ==========
+# ========== CONFIGURAÇÃO PRINCIPAL ==========
 st.set_page_config(
     page_title="E-book Premium: Indenização por Erro Médico",
     page_icon="⚖️",
@@ -16,55 +16,70 @@ st.set_page_config(
     initial_sidebar_state="auto"
 )
 
-# ========== CSS FORÇADO PARA TEMA CLARO ==========
+# ========== CSS SUPER FORÇADO PARA TEMA CLARO ==========
 st.markdown("""
 <style>
-    /* FORÇAR TEMA CLARO - FUNDO BRANCO */
+    /* RESET COMPLETO - FORÇAR TEMA CLARO */
     .stApp {
         background-color: white !important;
+        color: black !important;
     }
     
-    /* CORRIGIR CORES DO TEXTO */
-    .main-header, .sub-header, .chapter-title, .section-title, 
-    .normal-text, .quote-text, .footer, h1, h2, h3, h4, h5, h6, p, div, span {
+    /* CORRIGIR TODOS OS TEXTOS */
+    body, h1, h2, h3, h4, h5, h6, p, div, span, li, td, th, label {
         color: #000000 !important;
     }
     
     /* CORRIGIR BARRA LATERAL */
+    section[data-testid="stSidebar"] {
+        background-color: white !important;
+        color: black !important;
+    }
+    
     .css-1d391kg, .sidebar .sidebar-content {
         background-color: white !important;
         color: black !important;
     }
     
-    /* CORRIGIR CORES DOS CARDS */
+    /* CORRIGIR CARDS E CONTAINERS */
     .card-container {
         background-color: #F8F9FA !important;
         color: black !important;
-        border: 1px solid #ddd !important;
+        border: 1px solid #dee2e6 !important;
+        border-radius: 10px !important;
+        padding: 1.5rem !important;
+        margin-bottom: 1.5rem !important;
     }
     
     .blue-container {
         background-color: #E3F2FD !important;
         color: black !important;
         border-left: 5px solid #1E64C8 !important;
+        padding: 1rem !important;
+        margin-bottom: 1.5rem !important;
     }
     
     .yellow-container {
         background-color: #FFFDE7 !important;
         color: black !important;
         border-left: 5px solid #FFB200 !important;
+        padding: 1rem !important;
+        margin-bottom: 1.5rem !important;
     }
     
-    /* CORRIGIR INPUTS E BOTÕES */
+    /* CORRIGIR INPUTS */
     .stTextInput input, .stPassword input {
         background-color: white !important;
         color: black !important;
-        border: 1px solid #ccc !important;
+        border: 1px solid #ced4da !important;
     }
     
+    /* CORRIGIR BOTÕES */
     .stButton button {
         background-color: #1E64C8 !important;
         color: white !important;
+        border: none !important;
+        border-radius: 4px !important;
     }
     
     /* CORRIGIR SELECT BOX */
@@ -73,55 +88,85 @@ st.markdown("""
         color: black !important;
     }
     
-    /* GARANTIR QUE TODOS OS TEXTOS SEJAM PRETOS */
+    /* CORRIGIR RADIO BUTTONS */
+    .stRadio div {
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    /* CORRIGIR TODOS OS ELEMENTOS STREAMLIT */
+    .main .block-container {
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    /* GARANTIR QUE TUDO SEJA VISÍVEL */
     * {
         color: #000000 !important;
+    }
+    
+    /* ESTILOS ESPECÍFICOS DO SEU EBOOK */
+    .main-header {
+        font-size: 2.5rem;
+        color: #1E64C8 !important;
+        text-align: center;
+        margin-bottom: 0;
+    }
+    .sub-header {
+        font-size: 1.2rem;
+        color: #4A4A4A !important;
+        text-align: center;
+        margin-top: 0;
+    }
+    .chapter-title {
+        font-size: 1.8rem;
+        color: #1E64C8 !important;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+    }
+    .section-title {
+        font-size: 1.4rem;
+        color: #1E64C8 !important;
+        margin-top: 1.5rem;
+        margin-bottom: 0.8rem;
+    }
+    .normal-text {
+        font-size: 1rem;
+        color: #333333 !important;
+        text-align: justify;
+        margin-bottom: 1rem;
+    }
+    .quote-text {
+        font-size: 0.95rem;
+        color: #555555 !important;
+        padding-left: 1rem;
+        border-left: 3px solid #1E64C8;
+        margin-bottom: 1rem;
+    }
+    .footer {
+        font-size: 0.8rem;
+        color: #777777 !important;
+        text-align: center;
+        margin-top: 3rem;
+        padding-top: 1rem;
+        border-top: 1px solid #EEEEEE;
     }
 </style>
 """, unsafe_allow_html=True)
 
 # Resto do código original mantido igual...
 st.markdown("""
-<style>
-    .main-header {
-        font-size: 2.5rem;
-        color: #1E64C8;
-        text-align: center;
-        margin-bottom: 0;
-    }
-    .sub-header {
-        font-size: 1.2rem;
-        color: #4A4A4A;
-        text-align: center;
-        margin-top: 0;
-    }
-</style>
-""", unsafe_allow_html=True)
-
-# Adicionar uma âncora no topo da página e um botão oculto para rolar para o topo
-st.markdown("""
-<div id="topo"></div>
-<button id="topoBtn" onclick="window.scrollTo(0,0)" 
-    style="position: fixed; z-index: 9999; top: 0; left: 0; width: 1px; height: 1px; 
-    opacity: 0.01; background: transparent; border: none;"></button>
-""", unsafe_allow_html=True)
-
-# Adicionar JavaScript para rolagem automática para o topo quando houver troca de capítulo
-st.markdown("""
 <script type="text/javascript">
-    // Solução radical para rolagem forçada ao topo - executar a cada 100ms nos primeiros 2 segundos
     function forceScrollToTop() {
         window.scrollTo(0, 0);
         document.documentElement.scrollTo(0, 0);
         document.body.scrollTo(0, 0);
         
-        // Se ainda não estiver no topo, tente novamente
         if (window.scrollY > 0) {
             setTimeout(forceScrollToTop, 100);
         }
     }
     
-    // Executar imediatamente e mais algumas vezes com pequenos intervalos
     forceScrollToTop();
     setTimeout(forceScrollToTop, 10);  
     setTimeout(forceScrollToTop, 100);
@@ -129,9 +174,7 @@ st.markdown("""
     setTimeout(forceScrollToTop, 500);
     setTimeout(forceScrollToTop, 1000);
     
-    // Adicionar botão invisível no topo que é clicado programaticamente
     document.addEventListener('DOMContentLoaded', function() {
-        // Criar botão invisível no topo
         var topButton = document.createElement('button');
         topButton.id = 'auto-top-button';
         topButton.style.position = 'fixed';
@@ -140,13 +183,20 @@ st.markdown("""
         topButton.style.pointerEvents = 'none';
         document.body.prepend(topButton);
         
-        // Clicar nele programaticamente
         setTimeout(function() {
             document.getElementById('auto-top-button').click();
             forceScrollToTop();
         }, 100);
     });
 </script>
+""", unsafe_allow_html=True)
+
+# Adicionar uma âncora no topo da página
+st.markdown("""
+<div id="topo"></div>
+<button id="topoBtn" onclick="window.scrollTo(0,0)" 
+    style="position: fixed; z-index: 9999; top: 0; left: 0; width: 1px; height: 1px; 
+    opacity: 0.01; background: transparent; border: none;"></button>
 """, unsafe_allow_html=True)
 
 # Adicionar um número ao estado da sessão para forçar a reinicialização completa
@@ -157,145 +207,13 @@ if "page_load_count" not in st.session_state:
 if "scroll_to_top" not in st.session_state:
     st.session_state.scroll_to_top = False
 
-# Resto do CSS
-st.markdown("""
-<style>
-    /* CSS Base para todos os dispositivos */
-    .chapter-title {
-        font-size: 1.8rem;
-        color: #1E64C8;
-        margin-top: 2rem;
-        margin-bottom: 1rem;
-    }
-    .section-title {
-        font-size: 1.4rem;
-        color: #1E64C8;
-        margin-top: 1.5rem;
-        margin-bottom: 0.8rem;
-    }
-    .normal-text {
-        font-size: 1rem;
-        color: #333333;
-        text-align: justify;
-        margin-bottom: 1rem;
-    }
-    .quote-text {
-        font-size: 0.95rem;
-        color: #555555;
-        padding-left: 1rem;
-        border-left: 3px solid #1E64C8;
-        margin-bottom: 1rem;
-    }
-    .footer {
-        font-size: 0.8rem;
-        color: #777777;
-        text-align: center;
-        margin-top: 3rem;
-        padding-top: 1rem;
-        border-top: 1px solid #EEEEEE;
-    }
-    .card-container {
-        background-color: #F0F2F6;
-        border-radius: 10px;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-    }
-    .blue-container {
-        background-color: #E8F0FE;
-        border-left: 5px solid #1E64C8;
-        padding: 1rem;
-        margin-bottom: 1.5rem;
-    }
-    .yellow-container {
-        background-color: #FFF8E6;
-        border-left: 5px solid #FFB200;
-        padding: 1rem;
-        margin-bottom: 1.5rem;
-    }
-    .highlighted-box {
-        padding: 1rem;
-        background-color: #E8F0FE;
-        border-radius: 5px;
-        margin-bottom: 1rem;
-    }
-    .center-image {
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    .author-container {
-        display: flex;
-        align-items: center;
-        margin-bottom: 2rem;
-    }
-    .author-info {
-        margin-left: 1rem;
-    }
-    
-    /* CSS específico para dispositivos móveis */
-    @media (max-width: 768px) {
-        /* Ajustes para textos */
-        .main-header {
-            font-size: 1.8rem;
-        }
-        .sub-header {
-            font-size: 1rem;
-        }
-        .chapter-title {
-            font-size: 1.5rem;
-        }
-        .section-title {
-            font-size: 1.2rem;
-        }
-        
-        /* Ajuste para a barra lateral */
-        .css-1d391kg, .sidebar-content {
-            width: 100% !important;
-            margin-right: 0 !important;
-        }
-        
-        /* Ajuste para imagens */
-        img {
-            max-width: 100% !important;
-            height: auto !important;
-        }
-        
-        /* Melhorias para os containers */
-        .blue-container, .yellow-container, .card-container {
-            padding: 0.8rem;
-        }
-        
-        /* Melhorar navegação em dispositivos móveis */
-        button {
-            padding: 0.8rem !important;
-            min-height: 45px !important;
-        }
-    }
-    
-    /* Forçar a barra lateral a se comportar corretamente em dispositivos móveis */
-    .sidebar .sidebar-content {
-        background-color: white;
-    }
-    
-    /* Garantir que os elementos da barra lateral permaneçam visíveis */
-    .sidebar-content > * {
-        width: 100% !important;
-    }
-</style>
-""", unsafe_allow_html=True)
-
-# Sidebar Navigation
-st.sidebar.title("Navegação")
-pages = ["Capa", "Visualizar E-book", "Baixar PDF"]
-
 # Sistema simples de senha para controle de acesso
-# Você pode desativar removendo ou comentando este bloco de código
 if 'autenticado' not in st.session_state:
     st.session_state.autenticado = False
 
 if not st.session_state.autenticado:
-    st.markdown("<h1 style='text-align: center; color: #1E64C8;'>MedIndeniz</h1>", unsafe_allow_html=True)
-    st.markdown("<h2 style='text-align: center;'>Guia Completo: Indenização por Erro Médico</h2>", unsafe_allow_html=True)
+    st.markdown("<h1 class='main-header'>MedIndeniz</h1>", unsafe_allow_html=True)
+    st.markdown("<h2 class='sub-header'>Guia Completo: Indenização por Erro Médico</h2>", unsafe_allow_html=True)
     
     # Forçar centralização com HTML direto e margens auto
     balanca_url = get_medindeniz_logo_svg()
@@ -323,6 +241,10 @@ if not st.session_state.autenticado:
     
     # Para a execução do app aqui até que a senha correta seja fornecida
     st.stop()
+
+# Sidebar Navigation
+st.sidebar.title("Navegação")
+pages = ["Capa", "Visualizar E-book", "Baixar PDF"]
 
 # Inicializa a escolha na sessão se necessário
 if 'choice' not in st.session_state:
@@ -395,16 +317,12 @@ if choice == "Capa":
         col_a, col_b = st.columns(2)
         with col_a:
             if st.button("Visualizar Conteúdo", use_container_width=True):
-                # Usar as variáveis do sidebar diretamente
                 st.session_state.choice = "Visualizar E-book"
-                # Navegação direta no sidebar
                 st.query_params["page"] = "visualizar"
                 st.rerun()
         with col_b:
             if st.button("Baixar PDF", use_container_width=True):
-                # Usar as variáveis do sidebar diretamente
                 st.session_state.choice = "Baixar PDF"
-                # Navegação direta no sidebar
                 st.query_params["page"] = "baixar"
                 st.rerun()
 
@@ -416,19 +334,16 @@ elif choice == "Visualizar E-book":
     if "chapter" in st.query_params:
         try:
             url_chapter_index = int(st.query_params["chapter"])
-            # Garantir que o índice está dentro dos limites
             if 0 <= url_chapter_index < len(ebook_content["chapters"]):
                 st.session_state.selected_chapter = ebook_content["chapters"][url_chapter_index]["title"]
-                # Ativar rolagem para o topo se estiver marcado
                 if st.session_state.scroll_to_top:
-                    st.session_state.scroll_to_top = False  # Reset para não executar repetidamente
+                    st.session_state.scroll_to_top = False
                     st.markdown("""
                     <script>
                         window.scrollTo(0, 0);
                     </script>
                     """, unsafe_allow_html=True)
         except:
-            # Se o parâmetro não for um número válido, ignorar
             pass
     
     # Inicializar a seleção de capítulo se não existir na sessão
@@ -449,11 +364,9 @@ elif choice == "Visualizar E-book":
         st.query_params["chapter"] = str(chapter_index)
     
     # Exibir imagem para o capítulo usando URLs
-    # Obter URLs de imagens
     images = get_image_urls()
     
     # Determinar qual imagem usar com base no índice do capítulo, com tamanho reduzido
-    # Usando colunas para centralização real
     col1, col2, col3 = st.columns([1, 2, 1])
     
     with col2:
@@ -477,30 +390,6 @@ elif choice == "Visualizar E-book":
     # Mostrar título do capítulo como cabeçalho
     st.markdown(f"<h2 class='chapter-title'>{chapter['title']}</h2>", unsafe_allow_html=True)
     
-    # Estilo CSS customizado para os botões de navegação
-    st.markdown("""
-    <style>
-    .nav-button {
-        display: block;
-        width: 100%;
-        padding: 12px 20px;
-        background-color: white;
-        color: #333;
-        border: 1px solid #ddd;
-        border-radius: 25px;
-        text-align: center;
-        text-decoration: none;
-        font-size: 16px;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-    .nav-button:hover {
-        background-color: #f0f2f6;
-        border-color: #bbb;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-    
     # Exibir navegação de capítulos (anterior/próximo)
     col1, col2 = st.columns(2)
     with col1:
@@ -509,18 +398,11 @@ elif choice == "Visualizar E-book":
                         help="Navegar para o capítulo anterior"):
                 new_index = chapter_index - 1
                 st.session_state.selected_chapter = chapter_titles[new_index]
-                # Incrementar contador para forçar recarga da página
                 st.session_state.page_load_count += 1
-                
-                # Marcar para rolar para o topo na próxima carga
                 st.session_state.scroll_to_top = True
-                
-                # Atualizar o estado na sessão e URL
                 st.query_params.clear()
                 st.query_params["page"] = "visualizar"
                 st.query_params["chapter"] = str(new_index)
-                
-                # Recarregar a página completamente
                 st.rerun()
     with col2:
         if chapter_index < len(chapter_titles) - 1:
@@ -528,18 +410,11 @@ elif choice == "Visualizar E-book":
                         help="Navegar para o próximo capítulo"):
                 new_index = chapter_index + 1
                 st.session_state.selected_chapter = chapter_titles[new_index]
-                # Incrementar contador para forçar recarga da página
                 st.session_state.page_load_count += 1
-                
-                # Marcar para rolar para o topo na próxima carga
                 st.session_state.scroll_to_top = True
-                
-                # Atualizar o estado na sessão e URL
                 st.query_params.clear()
                 st.query_params["page"] = "visualizar"
                 st.query_params["chapter"] = str(new_index)
-                
-                # Recarregar a página completamente
                 st.rerun()
     
     # Botões de navegação no final do capítulo também
@@ -561,18 +436,13 @@ elif choice == "Visualizar E-book":
                 elif element["type"] == "bullet":
                     st.markdown(f"<ul><li>{element['text']}</li></ul>", unsafe_allow_html=True)
                 elif element["type"] == "table" and "data" in element:
-                    # Título da tabela se existir
                     if "title" in element:
                         st.markdown(f"<h4>{element['title']}</h4>", unsafe_allow_html=True)
                     
-                    # Converter dados da tabela para formato streamlit
                     headers = element["data"][0]
                     data = element["data"][1:]
-                    
-                    # Exibir tabela usando streamlit
                     st.table([dict(zip(headers, row)) for row in data])
                 elif element["type"] == "quote":
-                    # Simplificando para evitar erros de DOM
                     st.markdown(
                         f"""<div class='quote-text'>
                         "{element['text']}"
@@ -581,7 +451,6 @@ elif choice == "Visualizar E-book":
                         unsafe_allow_html=True
                     )
                 elif element["type"] == "warning":
-                    # Simplificando para evitar erros de DOM
                     st.markdown(
                         f"""<div style='background-color: #FFF8E6; padding: 15px; border-left: 5px solid #FFB200; margin: 10px 0;'>
                         ⚠️ <strong>Atenção:</strong> {element['text']}
@@ -589,7 +458,6 @@ elif choice == "Visualizar E-book":
                         unsafe_allow_html=True
                     )
                 elif element["type"] == "tip":
-                    # Simplificando para evitar erros de DOM
                     st.markdown(
                         f"""<div style='background-color: #E8F0FE; padding: 15px; border-left: 5px solid #1E64C8; margin: 10px 0;'>
                         💡 <strong>Dica:</strong> {element['text']}
@@ -597,7 +465,6 @@ elif choice == "Visualizar E-book":
                         unsafe_allow_html=True
                     )
                 elif element["type"] == "jurisprudence":
-                    # Usar uma div estática para evitar erros de removeChild
                     st.markdown(
                         f"""<div style='background-color: #F8FAFD; padding: 15px; border: 1px solid #E0E9F5; border-radius: 5px; margin: 10px 0;'>
                         <p style='font-style: italic; color: #333;'>{element['text']}</p>
@@ -608,7 +475,6 @@ elif choice == "Visualizar E-book":
                 elif element["type"] == "spacer":
                     st.write("")
             else:
-                # Se o elemento for apenas texto, adicionar como parágrafo normal
                 st.markdown(f"<p class='normal-text'>{element}</p>", unsafe_allow_html=True)
         
         st.markdown("</div>", unsafe_allow_html=True)
@@ -623,18 +489,11 @@ elif choice == "Visualizar E-book":
                         help="Navegar para o capítulo anterior"):
                 new_index = chapter_index - 1
                 st.session_state.selected_chapter = chapter_titles[new_index]
-                # Incrementar contador para forçar recarga da página
                 st.session_state.page_load_count += 1
-                
-                # Marcar para rolar para o topo na próxima carga
                 st.session_state.scroll_to_top = True
-                
-                # Atualizar o estado na sessão e URL
                 st.query_params.clear()
                 st.query_params["page"] = "visualizar"
                 st.query_params["chapter"] = str(new_index)
-                
-                # Recarregar a página completamente
                 st.rerun()
     with col2:
         if chapter_index < len(chapter_titles) - 1:
@@ -642,18 +501,11 @@ elif choice == "Visualizar E-book":
                         help="Navegar para o próximo capítulo"):
                 new_index = chapter_index + 1
                 st.session_state.selected_chapter = chapter_titles[new_index]
-                # Incrementar contador para forçar recarga da página
                 st.session_state.page_load_count += 1
-                
-                # Marcar para rolar para o topo na próxima carga
                 st.session_state.scroll_to_top = True
-                
-                # Atualizar o estado na sessão e URL
                 st.query_params.clear()
                 st.query_params["page"] = "visualizar"
                 st.query_params["chapter"] = str(new_index)
-                
-                # Recarregar a página completamente
                 st.rerun()
                 
     # Footer
@@ -694,10 +546,8 @@ elif choice == "Baixar PDF":
                 )
                 
                 if pdf_data:
-                    # Create download link
                     file_name = "Ebook_Indenizacao_Erro_Medico_Dr_Reginaldo_Oliveira.pdf"
                     
-                    # Display download link
                     st.success("PDF gerado com sucesso!")
                     st.markdown(
                         f'<a href="data:application/pdf;base64,{pdf_data}" download="{file_name}" target="_blank">'
@@ -751,7 +601,6 @@ if "template_view" in st.session_state and st.session_state.template_view["show"
         st.markdown("---")
         st.markdown(f"### {st.session_state.template_view['title']}")
         
-        # Text area to show the template content
         template_content = st.text_area(
             "Conteúdo do Modelo (copie e edite conforme necessário)",
             value=st.session_state.template_view["content"],
@@ -762,7 +611,6 @@ if "template_view" in st.session_state and st.session_state.template_view["show"
             st.session_state.template_view["show"] = False
             st.rerun()
         
-        # Download option for the template
         template_filename = f"{st.session_state.template_view['title'].replace(' ', '_')}.txt"
         
         st.download_button(
