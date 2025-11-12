@@ -5,7 +5,7 @@ import os
 app = Flask(__name__)
 app.secret_key = 'medindeniz_secret_key_2025'
 
-# Conteúdo completo do e-book (já testado e funcionando)
+# Conteúdo completo do e-book
 ebook_content = {
     "title": "E-book Premium: Indenização por Erro Médico",
     "subtitle": "Guia completo para profissionais e vítimas", 
@@ -73,25 +73,6 @@ ebook_content = {
             
             <p>Valores baseados em jurisprudência recente, sujeitos a variação conforme o caso.</p>
             """
-        },
-        {
-            "title": "Capítulo 3: Documentação Necessária",
-            "content": """
-            <h3>Documentos essenciais para comprovar o erro médico</h3>
-            
-            <h4>Lista de documentos obrigatórios:</h4>
-            <ul>
-                <li>Prontuário médico completo</li>
-                <li>Exames realizados antes e depois do procedimento</li>
-                <li>Receitas médicas e prescrições</li>
-                <li>Comprovantes de despesas médicas</li>
-                <li>Laudos de especialistas</li>
-            </ul>
-            
-            <div style="background: #E8F0FE; padding: 15px; border-left: 4px solid #1E64C8; margin: 15px 0;">
-                <strong>📋 Importante:</strong> Sempre solicite cópia do prontuário médico - é um direito do paciente garantido por lei.
-            </div>
-            """
         }
     ]
 }
@@ -142,7 +123,6 @@ def visualizar():
 @app.route('/baixar-pdf')
 @require_auth
 def baixar_pdf():
-    # PDF simulado - funcional
     pdf_content = "E-book: Indenização por Erro Médico\n\nConteúdo completo disponível na versão online."
     return send_file(
         BytesIO(pdf_content.encode()),
@@ -157,4 +137,5 @@ def logout():
     return redirect('/')
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
