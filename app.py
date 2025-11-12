@@ -5,7 +5,6 @@ from utils.pdf_generator import generate_pdf
 from content.chapters import ebook_content
 from content.templates import get_petition_templates
 from assets.images import get_image_urls, get_cover_image, get_author_image
-from content.sample_images import get_placeholder_image_dict
 from assets.logo import get_medindeniz_logo_svg, get_medindeniz_about
 
 # Page configuration
